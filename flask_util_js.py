@@ -173,6 +173,14 @@ class FlaskUtilJs(object):
         # 最后把数据写到实例里
         self._path = path
         self._endpoint = endpoint or flask_util_js.__name__
+        self._app.context_processor(self.context_processor)
+
+    def context_processor(self):
+        return {
+            'fujs': {
+                'path': self.path,
+            }
+        }
 
     @property
     def path(self):
@@ -181,3 +189,4 @@ class FlaskUtilJs(object):
     @property
     def endpoint(self):
         return self._endpoint
+
