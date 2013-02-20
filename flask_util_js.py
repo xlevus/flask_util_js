@@ -130,7 +130,7 @@ class FlaskUtilJs(object):
 
         if app:
             self.init_app(app)
-        
+
     def init_app(self, app):
         """
         安装到app上
@@ -139,7 +139,7 @@ class FlaskUtilJs(object):
             raise Exception('Flask-Admin is already associated with an application.')
 
         self._app = app
-            
+
         path = app.config.get('FLASK_UTIL_JS_PATH', FLASK_UTIL_JS_PATH)
         endpoint = app.config.get('FLASK_UTIL_JS_ENDPOINT', None)
 
@@ -158,7 +158,7 @@ class FlaskUtilJs(object):
             json_url_map = json.dumps(url_map, indent=4, ensure_ascii=False)
 
             rv = render_template_string(
-                FLASK_UTIL_JS_TPL_STRING, 
+                FLASK_UTIL_JS_TPL_STRING,
                 json_url_map=json_url_map
                 )
 
@@ -169,11 +169,11 @@ class FlaskUtilJs(object):
                     'Cache-Control':'no-cache',
                 }
             )
-        
+
         # 最后把数据写到实例里
         self._path = path
         self._endpoint = endpoint or flask_util_js.__name__
-            
+
     @property
     def path(self):
         return self._path
