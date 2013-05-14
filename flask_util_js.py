@@ -39,31 +39,6 @@ FLASK_UTIL_JS_TPL_STRING = '''
 var flask_util = function() {
     var url_map = {{ json_url_map }};
 
-    function url_encode(clearString) {
-        var output = '';
-        var x = 0;
-        clearString = clearString.toString();
-        var regex = /(^[a-zA-Z0-9-_.]*)/;
-        while (x < clearString.length) {
-            var match = regex.exec(clearString.substr(x));
-            if (match != null && match.length > 1 && match[1] != '') {
-                output += match[1];
-                x += match[1].length;
-            } else {
-                if (clearString.substr(x, 1) == ' ') {
-                    output += '+';
-                }
-                else {
-                    var charCode = clearString.charCodeAt(x);
-                    var hexVal = charCode.toString(16);
-                    output += '%' + ( hexVal.length < 2 ? '0' : '' ) + hexVal.toUpperCase();
-                }
-                x++;
-            }
-        }
-        return output;
-    }
-
     function url_for(endpoint, params) {
         if (!params) {
             params = {};
@@ -81,7 +56,7 @@ var flask_util = function() {
         var path = rule.replace(rex, function(_i, _0, _1) {
             if (params[_1]) {
                 used_params[_1] = params[_1];
-                return url_encode(params[_1]);
+                return encodeURIComponent(params[_1]);
             } else {
                 throw(_1 + ' does not exist in params');
             }
@@ -98,7 +73,7 @@ var flask_util = function() {
             if(query_string.length > 0) {
                 query_string += '&';
             }
-            query_string += url_encode(k)+'='+url_encode(v);
+            query_string += encodeURIComponent(k)+'='+encodeURIComponent(v);
         }
 
         var url = path;
@@ -151,9 +126,13 @@ class FlaskUtilJs(object):
             url_map = dict()
 
             for k,v in org_url_map.items():
+                # Use the Flask app config's WEB_ROOT value if available.
+                url_rule = v[0].rule
+                if "WEB_ROOT" in app.config:
+                    url_rule = app.config["WEB_ROOT"] + (v[0].rule)[1:]
                 url_map[k] = dict(
-                    rule=v[0].rule,
-                    )
+                    rule=url_rule
+                )
 
             json_url_map = json.dumps(url_map, indent=4, ensure_ascii=False)
 
