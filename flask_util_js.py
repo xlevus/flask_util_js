@@ -60,6 +60,8 @@ var flask_util = function() {
                 var path = rule.replace(rex, function(_i, _0, _1) {
                     if (params[_1]) {
                         used_params[_1] = params[_1];
+                        if(_0 == 'path:'){
+                            return params[_1];}
                         return encodeURIComponent(params[_1]);
                     } else {
                         throw(_1 + ' does not exist in params');
