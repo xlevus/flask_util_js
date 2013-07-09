@@ -2,11 +2,11 @@ from setuptools import setup
 
 setup(
     name="flask_util_js",
-    version="0.2.6",
+    version="0.2.7",
     zip_safe=False,
     platforms='any',
     py_modules=['flask_util_js'],
-    url="https://github.com/dantezhu/flask_util_js",
+    url="https://github.com/xlevus/flask_util_js",
     license="BSD",
     author="dantezhu",
     author_email="zny2008@gmail.com",
