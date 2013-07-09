@@ -29,7 +29,7 @@
 __version__ = (0, 2, 5)
 
 from flask import Response
-from flask import render_template_string, json
+from flask import render_template_string, json, url_for
 
 FLASK_UTIL_JS_PATH = '/flask_util.js'
 
@@ -71,21 +71,30 @@ var flask_util = function() {
         if (!url_map[endpoint]) {
             return '';
         }
-        var rule = url_map[endpoint]['rule'];
+        var rules = url_map[endpoint]['rules'];
 
         var used_params = {};
 
-
         var rex = /\<\s*(\w+:)*(\w+)\s*\>/ig;
 
-        var path = rule.replace(rex, function(_i, _0, _1) {
-            if (params[_1]) {
-                used_params[_1] = params[_1];
-                return url_encode(params[_1]);
-            } else {
-                throw(_1 + ' does not exist in params');
+        for (var idx in rules){
+            var rule = rules[idx];
+            try {
+                var path = rule.replace(rex, function(_i, _0, _1) {
+                    if (params[_1]) {
+                        used_params[_1] = params[_1];
+                        return url_encode(params[_1]);
+                    } else {
+                        throw(_1 + ' does not exist in params');
+                    }
+                });
+            } catch(err){
             }
-        });
+        }
+
+        if (path === undefined){
+            return "";
+        }
 
         var query_string = '';
 
@@ -151,9 +160,7 @@ class FlaskUtilJs(object):
             url_map = dict()
 
             for k,v in org_url_map.items():
-                url_map[k] = dict(
-                    rule=v[0].rule,
-                    )
+                url_map[k] = {'rules':[x.rule for x in v]}
 
             json_url_map = json.dumps(url_map, indent=4, ensure_ascii=False)
 
@@ -184,7 +191,7 @@ class FlaskUtilJs(object):
 
     @property
     def path(self):
-        return self._path
+        return url_for(self.endpoint)
 
     @property
     def endpoint(self):
