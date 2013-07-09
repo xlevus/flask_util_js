@@ -31,7 +31,7 @@
 __version__ = (0, 2, 5)
 
 from flask import Response
-from flask import render_template_string, json, url_for
+from flask import render_template_string, json, url_for, request
 
 FLASK_UTIL_JS_PATH = '/flask_util.js'
 
@@ -145,7 +145,7 @@ class FlaskUtilJs(object):
                         url_rule = spec.rule
                     rules.append(url_rule)
 
-                url_map[k] = {'rules':rules}
+                url_map[k] = {'rules':[request.script_root+url_rule]}
 
             json_url_map = json.dumps(url_map, indent=4, ensure_ascii=False)
 
